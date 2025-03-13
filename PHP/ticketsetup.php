@@ -10,26 +10,44 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background-color: #f0f4ff;
+            background-color: #f0f2f5;
+        }
+
+        .header {
             display: flex;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
-            padding: 40px;
+            background: #fff;
+            padding: 20px 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .header .profile {
+            font-weight: 500;
         }
 
         .container {
-            width: 900px;
+            max-width: 960px;
             background: white;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin: 40px auto;
         }
 
         h3 {
+            font-size: 20px;
             margin-bottom: 10px;
             color: #222;
             font-weight: bold;
@@ -58,7 +76,6 @@
             font-size: 14px;
         }
 
-        /* Layout for Seating Section */
         .seating-container {
             display: flex;
             align-items: center;
@@ -88,7 +105,7 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
         }
@@ -98,7 +115,7 @@
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 5px;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
         }
@@ -118,6 +135,18 @@
 </head>
 
 <body>
+    <div class="header">
+        <div class="logo"><strong>HELP EventVision System</strong></div>
+        <div class="nav">
+            <a href="#">Dashboard</a>
+            <a href="#">Register Event Organiser</a>
+            <a href="#">Analytics Reports</a>
+        </div>
+        <div class="profile">
+            Admin User | <a href="#" style="text-decoration: none;">Log Out</a>
+        </div>
+    </div>
+
     <div class="container">
         <div class="section">
             <h3>Ticket Categories</h3>
@@ -129,7 +158,7 @@
                     <option>No Limit</option>
                     <option>4 per order</option>
                 </select>
-                <button>&#128465;</button> <!-- Trash icon -->
+                <button>&#128465;</button>
             </div>
             <div class="form-group">
                 <input type="text" value="VIP Access">
@@ -183,5 +212,4 @@
         </div>
     </div>
 </body>
-
 </html>
