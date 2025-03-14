@@ -41,7 +41,7 @@ Start the Server:
 
 Open the XAMPP control panel and start Apache and MySQL.
 
-Navigate to http://localhost/eco-waste-system in your browser to view the project.
+Navigate to http://localhost/EventVision-System/ in your browser to view the project.
 
 Usage
 Dashboard: Navigate to the dashboard to access all features.
