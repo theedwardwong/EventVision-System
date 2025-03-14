@@ -3,22 +3,22 @@ session_start();
 require 'config.php';
 
 // Redirect if not logged in
-if (!isset($_SESSION['organizer_id'])) {
+if (!isset($_SESSION['organiser_id'])) {
     header('Location: login.php');
     exit();
 }
 
-$organizer_id = $_SESSION['organizer_id'];
-$organizer_name = $_SESSION['organizer_name'];
+$organiser_id = $_SESSION['organiser_id'];
+$organiser_name = $_SESSION['organiser_name'];
 
 // Fetch total revenue and tickets sold
-$stmt = $pdo->prepare("SELECT SUM(revenue) AS total_revenue, SUM(tickets_sold) AS total_tickets FROM events WHERE organizer_id = ?");
-$stmt->execute([$organizer_id]);
+$stmt = $pdo->prepare("SELECT SUM(revenue) AS total_revenue, SUM(tickets_sold) AS total_tickets FROM events WHERE organiser_id = ?");
+$stmt->execute([$organiser_id]);
 $stats = $stmt->fetch();
 
 // Fetch upcoming events
-$stmt = $pdo->prepare("SELECT * FROM events WHERE organizer_id = ? ORDER BY event_date ASC LIMIT 5");
-$stmt->execute([$organizer_id]);
+$stmt = $pdo->prepare("SELECT * FROM events WHERE organiser_id = ? ORDER BY event_date ASC LIMIT 5");
+$stmt->execute([$organiser_id]);
 $events = $stmt->fetchAll();
 ?>
 
@@ -54,13 +54,13 @@ $events = $stmt->fetchAll();
         <a href="#">Reports</a>
     </div>
     <div class="profile">
-        <?php echo htmlspecialchars($organizer_name); ?> | <a href="logout.php">Log Out</a>
+        <?php echo htmlspecialchars($organiser_name); ?> | <a href="login.php">Log Out</a>
     </div>
 </div>
 
 <div class="container">
     <h2>Dashboard</h2>
-    <p>Welcome back, Event Organiser, <?php echo htmlspecialchars($organizer_name); ?>!</p>
+    <p>Welcome back, Event Organiser, <?php echo htmlspecialchars($organiser_name); ?>!</p>
 
     <div class="stats">
         <div class="card">
@@ -97,7 +97,7 @@ $events = $stmt->fetchAll();
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>No upcoming events found.</p>
+            <p>No upcoming events found. <a href="create_event.php">Create your first event!</a></p>
         <?php endif; ?>
     </div>
 </div>

@@ -1,3 +1,50 @@
+<?php
+session_start();
+require 'config.php';
+
+$error = "";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+    $email = trim($_POST['email']);
+    $password = trim($_POST['password']);
+
+    if (empty($email) || empty($password)) {
+        $error = "Please fill in both fields.";
+    } else {
+        try {
+            $stmt = $pdo->prepare("SELECT * FROM event_organisers WHERE email = ? AND status = 'Active'");
+            $stmt->execute([$email]);
+            $user = $stmt->fetch();
+
+            if ($user && password_verify($password, $user['password'])) {
+
+                // Store session variables
+                $_SESSION['organiser_id'] = $user['organiser_id'];
+                $_SESSION['organiser_name'] = $user['full_name'];
+                $_SESSION['role'] = $user['role'];
+
+                // Redirect based on role
+                if ($user['role'] == 'Admin') {
+                    header('Location: dashboardAdmin.php');
+                } else if ($user['role'] == 'Organiser') {
+                    header('Location: dashboardEventOrganiser.php');
+                } else {
+                    $error = "Invalid user role.";
+                }
+                exit();
+
+            } else {
+                $error = "Invalid email or password.";
+            }
+
+        } catch (PDOException $e) {
+            $error = "Something went wrong. Please try again.";
+        }
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -52,15 +99,11 @@
     <h2>HELP EventVision System</h2>
     <p>Manage your events seamlessly</p>
 
-    <?php
-    session_start();
-    if (isset($_SESSION['error'])) {
-        echo "<p class='error'>{$_SESSION['error']}</p>";
-        unset($_SESSION['error']);
-    }
-    ?>
+    <?php if (!empty($error)): ?>
+        <p class="error"><?php echo htmlspecialchars($error); ?></p>
+    <?php endif; ?>
 
-    <form action="process_login.php" method="POST">
+    <form action="" method="POST">
         <label for="email">Email address</label>
         <input type="email" id="email" name="email" required>
 
