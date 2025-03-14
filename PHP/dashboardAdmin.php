@@ -118,7 +118,7 @@
     <div class="logo"><strong>HELP EventVision System</strong></div>
     <div class="nav">
         <a href="#">Dashboard</a>
-        <a href="#">Register Event Organiser</a>
+        <a href="RegistrationEventOrganiser.php">Register Event Organiser</a>
         <a href="#">Analytics Reports</a>
     </div>
     <div class="profile">
@@ -146,8 +146,28 @@
     </div>
 
     <div class="quick-actions">
-        <button class="btn-create">Create Event Organiser</button>
-        <button class="btn-analytics">View Analytics Reports</button>
+    <button onclick="window.location.href='RegistrationEventOrganiser.php'" 
+        style="
+            background-color: #e91e63; 
+            color: white; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;">
+        Create Event Organiser
+    </button>
+    <button onclick="window.location.href='analytics_reports.php'" 
+        style="
+            background-color: #3f51b5; 
+            color: white; 
+            padding: 15px; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+            font-weight: bold;">
+        View Analytics Reports
+    </button>
     </div>
 </div>
 
