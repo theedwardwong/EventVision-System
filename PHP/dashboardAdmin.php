@@ -117,12 +117,12 @@
 <div class="header">
     <div class="logo"><strong>HELP EventVision System</strong></div>
     <div class="nav">
-        <a href="#">Dashboard</a>
+        <a href="dashboardAdmin.php">Dashboard</a>
         <a href="RegistrationEventOrganiser.php">Register Event Organiser</a>
         <a href="#">Analytics Reports</a>
     </div>
     <div class="profile">
-        Admin User | <a href="#">Log Out</a>
+        Admin User | <a href="login.php">Log Out</a>
     </div>
 </div>
 

@@ -29,8 +29,25 @@ $events = $stmt->fetchAll();
     <title>Dashboard - HELP EventVision System</title>
     <style>
         body { font-family: Arial, sans-serif; background: #f0f2f5; }
-        .header { display: flex; justify-content: space-between; padding: 20px; background: #fff; }
-        .nav { display: flex; gap: 20px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 20px 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .header .nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .header .profile {
+            font-weight: 500;
+        }
+
         .container { width: 80%; margin: 20px auto; }
         .stats { display: flex; gap: 20px; margin-bottom: 20px; }
         .card { background: #fff; padding: 20px; border-radius: 10px; flex: 1; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
@@ -41,6 +58,7 @@ $events = $stmt->fetchAll();
         .view { background: #512da8; }
         .events { background: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
         .event-item { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
+        
     </style>
 </head>
 <body>
@@ -97,7 +115,7 @@ $events = $stmt->fetchAll();
                 </div>
             <?php endforeach; ?>
         <?php else: ?>
-            <p>No upcoming events found. <a href="create_event.php">Create your first event!</a></p>
+            <p>No upcoming events found. <a href="EventCreation.php">Create your first event!</a></p>
         <?php endif; ?>
     </div>
 </div>

@@ -49,8 +49,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background: #f0f0f0;
+            margin: 0;
+            background: #f0f2f5;
         }
+
+        /* === Navbar Styles === */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background-color: #ffffff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar .logo {
+            font-weight: bold;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .navbar .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .navbar .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .navbar .nav-links a:hover {
+            color: #6200ea;
+        }
+
+        .navbar .login-btn {
+            background-color: #6200ea;
+            color: #fff;
+            padding: 8px 16px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar .login-btn:hover {
+            background-color: #3700b3;
+        }
+
         .container {
             width: 400px;
             margin: 50px auto;
@@ -91,6 +139,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 
+<div class="navbar">
+    <div class="logo">HELP EventVision System</div>
+    <div class="nav-links">
+        <a href="dashboardAdmin.php">Dashboard</a>
+        <a href="RegistrationEventOrganiser.php">Register Event Organiser</a>
+        <a href="#">Analytics Reports</a>
+    </div>
+    <div class="profile">
+        Admin User | <a href="login.php">Log Out</a>
+    </div>
+</div>
+
 <div class="container">
     <h2>Register Event Organiser</h2>
     <p>Create a new event organiser account</p>
@@ -115,7 +175,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <p class="info">A welcome email will be sent to the registered email address with login credentials.</p>
 
-        <button type="reset" class="cancel-btn">Cancel</button>
+        <button type="reset" class="cancel-btn" onclick="window.location.href='dashboardAdmin.php'">Cancel</button>
         <button type="submit" class="register-btn">Register Organizer</button>
     </form>
 </div>
