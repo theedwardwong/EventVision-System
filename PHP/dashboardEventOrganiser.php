@@ -2,12 +2,6 @@
 session_start();
 require 'config.php';
 
-// Redirect if not logged in
-if (!isset($_SESSION['organiser_id'])) {
-    header('Location: login.php');
-    exit();
-}
-
 $organiser_id = $_SESSION['organiser_id'];
 $organiser_name = $_SESSION['organiser_name'];
 
@@ -94,7 +88,7 @@ $events = $stmt->fetchAll();
     </div>
 
     <div class="quick-actions">
-        <button class="create" onclick="window.location.href='create_event.php'">Create Event</button>
+        <button class="create" onclick="window.location.href='EventCreation.php'">Create Event</button>
         <button class="ticket" onclick="window.location.href='ticket_setup.php'">Ticket Setup</button>
         <button class="view" onclick="window.location.href='attendees.php'">View Attendees</button>
     </div>
