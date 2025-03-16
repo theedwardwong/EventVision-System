@@ -9,28 +9,58 @@
             background: #f0f2f5;
             margin: 0;
             padding: 0;
+            color: #333;
         }
 
-        .header {
+        /* === Navbar Styles (Consistent with Landing + Login Pages) === */
+        header {
+            background: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: #fff;
             padding: 20px 60px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .header .nav a {
-            margin-right: 20px;
+        header .logo {
+            font-weight: bold;
+            font-size: 20px;
+            color: #333;
+        }
+
+        header .nav {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+
+        header .nav a {
             text-decoration: none;
-            color: #000;
+            color: #333;
             font-weight: 500;
+            transition: color 0.3s ease;
         }
 
-        .header .profile {
-            font-weight: 500;
+        header .nav a:hover {
+            color: #6200ea;
         }
 
+        header .profile {
+            font-size: 14px;
+            color: #333;
+        }
+
+        header .profile a {
+            color: #6200ea;
+            text-decoration: none;
+            margin-left: 8px;
+        }
+
+        header .profile a:hover {
+            text-decoration: underline;
+        }
+
+        /* === Container === */
         .container {
             max-width: 960px;
             margin: 40px auto;
@@ -45,35 +75,46 @@
         .welcome {
             font-size: 16px;
             margin-bottom: 40px;
-            color: #333;
+            color: #555;
         }
 
+        /* === Dashboard Cards === */
         .dashboard-cards {
             display: flex;
             justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
             margin-bottom: 40px;
         }
 
         .card {
             background: #fff;
-            width: 30%;
+            flex: 1;
+            min-width: 250px;
             padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
         }
 
         .card h3 {
             font-size: 18px;
             margin-bottom: 10px;
+            color: #333;
         }
 
         .card p {
             font-size: 24px;
             font-weight: bold;
-            color: #333;
+            color: #6200ea;
         }
 
+        /* === Quick Actions === */
         .quick-actions {
             display: flex;
             flex-direction: column;
@@ -107,29 +148,45 @@
             background-color: #303f9f;
         }
 
-        a {
-            text-decoration: none;
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            header .nav {
+                flex-direction: column;
+                gap: 15px;
+                margin-top: 10px;
+            }
+
+            .dashboard-cards {
+                flex-direction: column;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="header">
-    <div class="logo"><strong>HELP EventVision System</strong></div>
-    <div class="nav">
+<!-- === Navbar/Header === -->
+<header>
+    <div class="logo">HELP EventVision System</div>
+    <nav class="nav">
         <a href="dashboardAdmin.php">Dashboard</a>
         <a href="RegistrationEventOrganiser.php">Register Event Organiser</a>
         <a href="#">Analytics Reports</a>
-    </div>
+    </nav>
     <div class="profile">
         Admin User | <a href="login.php">Log Out</a>
     </div>
-</div>
+</header>
 
+<!-- === Main Content === -->
 <div class="container">
     <h2>Dashboard</h2>
     <div class="welcome">Welcome back, Admin User!</div>
 
+    <!-- Dashboard Stats Cards -->
     <div class="dashboard-cards">
         <div class="card">
             <h3>Total Revenue</h3>
@@ -145,29 +202,10 @@
         </div>
     </div>
 
+    <!-- Quick Actions Buttons -->
     <div class="quick-actions">
-    <button onclick="window.location.href='RegistrationEventOrganiser.php'" 
-        style="
-            background-color: #e91e63; 
-            color: white; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold;">
-        Create Event Organiser
-    </button>
-    <button onclick="window.location.href='analytics_reports.php'" 
-        style="
-            background-color: #3f51b5; 
-            color: white; 
-            padding: 15px; 
-            border: none; 
-            border-radius: 5px; 
-            cursor: pointer; 
-            font-weight: bold;">
-        View Analytics Reports
-    </button>
+        <button class="btn-create" onclick="window.location.href='RegistrationEventOrganiser.php'">Create Event Organiser</button>
+        <button class="btn-analytics" onclick="window.location.href='#'">View Analytics Reports</button>
     </div>
 </div>
 

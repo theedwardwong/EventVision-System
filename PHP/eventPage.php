@@ -143,7 +143,9 @@ $categories = ['All Categories', 'Music', 'Theatre', 'Dance', 'Workshop'];
         <a href="#">Events</a>
         <a href="#">About</a>
         <a href="#">Contact</a>
-        <a href="login.php"><button style="background:#6200ea; color:#fff; border:none; padding:8px 16px; border-radius:5px;">Login</button></a>
+        <a href="login.php">
+            <button style="background:#6200ea; color:#fff; border:none; padding:8px 16px; border-radius:5px;">Login</button>
+        </a>
     </nav>
 </header>
 
@@ -165,14 +167,20 @@ $categories = ['All Categories', 'Music', 'Theatre', 'Dance', 'Workshop'];
     <div class="event-grid">
         <?php if ($events): ?>
             <?php foreach ($events as $event): ?>
+                <?php 
+                    // Check if event_image exists and file exists in uploads folder
+                    $imagePath = !empty($event['event_image']) && file_exists('uploads/' . $event['event_image']) 
+                        ? 'uploads/' . htmlspecialchars($event['event_image']) 
+                        : 'https://via.placeholder.com/400x200?text=No+Image';
+                ?>
                 <div class="event-card">
-                    <img src="<?php echo htmlspecialchars($event['event_image'] ?? 'https://via.placeholder.com/400x200'); ?>" alt="Event Image">
+                    <img src="<?php echo $imagePath; ?>" alt="Event Image">
                     <div class="event-info">
                         <h3><?php echo htmlspecialchars($event['event_name']); ?></h3>
                         <p>📅 <?php echo date('F j, Y', strtotime($event['event_date'])); ?></p>
                         <p>📍 <?php echo htmlspecialchars($event['event_location'] ?? 'HELP Subang 2'); ?></p>
                         <strong>RM <?php echo htmlspecialchars($event['event_price']); ?></strong>
-                        <button onclick="window.location.href='book.php?id=<?php echo $event['id']; ?>'">Book Now</button>
+                        <button onclick="window.location.href='TicketPurchase.php?id=<?php echo $event['id']; ?>'">Book Now</button>
                     </div>
                 </div>
             <?php endforeach; ?>

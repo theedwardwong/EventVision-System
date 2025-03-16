@@ -6,6 +6,7 @@ if (!isset($_SESSION['organiser_id'])) {
 }
 
 $organiser_id = $_SESSION['organiser_id'];
+$organiser_name = $_SESSION['organiser_name'] ?? 'Organiser';
 $event_id = $_GET['event_id'] ?? 0;
 
 $conn = new mysqli("localhost", "root", "", "evsdatabase");
@@ -109,6 +110,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (isset($_POST['delete_event'])) {
+
+        // Start a transaction to ensure data integrity
+        $conn->begin_transaction();
+    
+        try {
+            // Delete promotional codes
+            $stmt = $conn->prepare("DELETE FROM promotional_codes WHERE event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            $stmt->execute();
+    
+            // Delete ticket types
+            $stmt = $conn->prepare("DELETE FROM ticket_types WHERE event_id = ?");
+            $stmt->bind_param("i", $event_id);
+            $stmt->execute();
+    
+            // Delete the event itself
+            $stmt = $conn->prepare("DELETE FROM events WHERE id = ?");
+            $stmt->bind_param("i", $event_id);
+            $stmt->execute();
+    
+            // You can also delete attendees/orders here if necessary
+    
+            // Commit transaction
+            $conn->commit();
+    
+            // Redirect after deletion
+            header("Location: eventsPageForEventOrganiser.php?message=EventDeleted");
+            exit();
+    
+        } catch (Exception $e) {
+            $conn->rollback();
+            echo "❌ Failed to delete the event: " . $e->getMessage();
+        }
+    }
+
     // Redirect after save
     header("Location: eventsPageForEventOrganiser.php");
     exit();
@@ -120,133 +157,228 @@ $conn->close();
 
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ticket Setup - HELP EventVision System</title>
     <style>
-        * {margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif;}
-        body {background-color: #f0f4ff;}
-        .navbar {width: 100%; background-color: #4a3aff; display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; color: white;}
-        .navbar .logo {font-weight: bold; font-size: 20px;}
-        .navbar ul {display: flex; list-style: none; gap: 20px;}
-        .navbar ul li a {color: white; text-decoration: none;}
-        .container {max-width: 960px; margin: 40px auto; background: #fff; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);}
-        h2 {margin-bottom: 20px; color: #333;}
-        .section {margin-bottom: 30px;}
-        .section h3 {font-size: 18px; color: #222; margin-bottom: 10px;}
-        .form-group {display: flex; gap: 10px; margin-bottom: 10px;}
-        input, select {flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 5px;}
-        .add-btn {background: none; border: none; color: #007bff; cursor: pointer; font-size: 14px;}
-        .add-btn:hover {text-decoration: underline;}
-        .seating-layout img {width: 100%; max-width: 400px; border-radius: 8px; border: 1px solid #ddd; margin-bottom: 15px;}
-        .buttons {display: flex; justify-content: space-between;}
-        .cancel {background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;}
-        .save {background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer;}
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+        body { background-color: #f0f2f5; }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+            padding: 20px 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header .logo {
+            font-weight: bold;
+        }
+
+        .nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .profile {
+            font-weight: 500;
+        }
+
+        .container {
+            width: 80%;
+            margin: 30px auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section h3 {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .ticket-group, .promo-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        input, select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+        }
+
+        .add-btn {
+            color: #007bff;
+            background: none;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .add-btn:hover {
+            text-decoration: underline;
+        }
+
+        .seating-layout img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn-cancel {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-save {
+            background-color: #28a745;
+            color: #fff;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .delete {
+            background:rgb(255, 124, 1);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+
     </style>
     <script>
         function addCategory() {
-            const container = document.getElementById('ticket-category-container');
+            const container = document.getElementById('ticket-categories');
             const div = document.createElement('div');
-            div.classList.add('form-group');
+            div.classList.add('ticket-group');
             div.innerHTML = `
-                <input type="text" name="ticket_type_name[]" placeholder="Category Name">
-                <input type="number" name="ticket_price[]" placeholder="Price">
-                <input type="number" name="ticket_quantity[]" placeholder="Quantity">
+                <input type="text" name="ticket_type_name[]" placeholder="Category Name" required>
+                <input type="number" name="ticket_price[]" placeholder="Price" required>
+                <input type="number" name="ticket_quantity[]" placeholder="Quantity" required>
                 <select name="ticket_limit[]">
                     <option>No Limit</option>
                     <option>4 per order</option>
                 </select>
-                <button type="button" onclick="this.parentElement.remove()">&#128465;</button>
+                <button type="button" onclick="this.parentElement.remove()">❌</button>
             `;
             container.appendChild(div);
         }
 
         function addPromo() {
-            const container = document.getElementById('promo-code-container');
+            const container = document.getElementById('promo-codes');
             const div = document.createElement('div');
-            div.classList.add('form-group');
+            div.classList.add('promo-group');
             div.innerHTML = `
-                <input type="text" name="promo_code[]" placeholder="Promo Code">
-                <input type="number" name="promo_discount[]" placeholder="Discount %">
-                <input type="date" name="promo_expiry[]">
+                <input type="text" name="promo_code[]" placeholder="Promo Code" required>
+                <input type="number" name="promo_discount[]" placeholder="Discount %" required>
+                <input type="date" name="promo_expiry[]" required>
                 <select name="promo_category[]">
                     <option>All Categories</option>
                 </select>
-                <button type="button" onclick="this.parentElement.remove()">&#128465;</button>
+                <button type="button" onclick="this.parentElement.remove()">❌</button>
             `;
             container.appendChild(div);
         }
     </script>
 </head>
-
 <body>
-    <div class="navbar">
-        <div class="logo">HELP EventVision System</div>
-        <ul>
-            <li><a href="dashboard.php">Dashboard</a></li>
-            <li><a href="eventsPageForEventOrganiser.php">Events</a></li>
-            <li><a href="analytics.php">Reports</a></li>
-            <li><a href="logout.php">Logout</a></li>
-        </ul>
+
+<div class="header">
+    <div class="logo">HELP EventVision System</div>
+    <div class="nav">
+        <a href="dashboardEventOrganiser.php">Dashboard</a>
+        <a href="eventsPageForEventOrganiser.php">Ticket Setup</a>
+        <a href="#">Analytics Reports</a>
     </div>
-
-    <div class="container">
-        <h2>Ticket Setup for <?php echo htmlspecialchars($event['event_name']); ?></h2>
-        <form method="post">
-            <div class="section">
-                <h3>Ticket Categories</h3>
-                <div id="ticket-category-container">
-                    <?php foreach ($tickets as $ticket): ?>
-                        <div class="form-group">
-                            <input type="text" name="ticket_type_name[]" value="<?php echo htmlspecialchars($ticket['type_name']); ?>">
-                            <input type="number" name="ticket_price[]" value="<?php echo htmlspecialchars($ticket['price']); ?>">
-                            <input type="number" name="ticket_quantity[]" value="<?php echo htmlspecialchars($ticket['max_quantity']); ?>">
-                            <select name="ticket_limit[]">
-                                <option>No Limit</option>
-                                <option <?php echo $ticket['max_quantity'] == 4 ? 'selected' : ''; ?>>4 per order</option>
-                            </select>
-                            <button type="button" onclick="this.parentElement.remove()">&#128465;</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <button type="button" class="add-btn" onclick="addCategory()">+ Add Another Category</button>
-            </div>
-
-            <div class="section">
-                <h3>Seating Layout</h3>
-                <div class="seating-layout">
-                    <img src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/9167360778/original/p-IDpn2ET2_OXLSrzt24AIn8he70s0VoNQ.png?1661972018" alt="Seating Layout">
-                    <select><option>Section A (Front) - VIP Access</option></select>
-                    <select><option>Section B (Middle) - General Admission</option></select>
-                    <select><option>Section C (Rear) - General Admission</option></select>
-                </div>
-            </div>
-
-            <div class="section">
-                <h3>Promotional Codes</h3>
-                <div id="promo-code-container">
-                    <?php foreach ($promos as $promo): ?>
-                        <div class="form-group">
-                            <input type="text" name="promo_code[]" value="<?php echo htmlspecialchars($promo['code']); ?>">
-                            <input type="number" name="promo_discount[]" value="<?php echo htmlspecialchars($promo['discount_percentage']); ?>">
-                            <input type="date" name="promo_expiry[]" value="<?php echo htmlspecialchars($promo['expiry_date']); ?>">
-                            <select name="promo_category[]">
-                                <option>All Categories</option>
-                            </select>
-                            <button type="button" onclick="this.parentElement.remove()">&#128465;</button>
-                        </div>
-                    <?php endforeach; ?>
-                </div>
-                <button type="button" class="add-btn" onclick="addPromo()">+ Add Promotional Code</button>
-            </div>
-
-            <div class="buttons">
-                <button type="button" class="cancel" onclick="window.location.href='eventsPageForEventOrganiser.php'">Cancel</button>
-                <button type="submit" class="save">Save Changes</button>
-            </div>
-        </form>
+    <div class="profile">
+        <?php echo htmlspecialchars($organiser_name); ?> | <a href="logout.php" style="color: #6a1b9a; text-decoration: none;">Log Out</a>
     </div>
+</div>
+
+<div class="container">
+    <h2>Ticket Setup for <?php echo htmlspecialchars($event['event_name']); ?></h2>
+    <form method="post">
+        <div class="form-section">
+            <h3>Ticket Categories</h3>
+            <div id="ticket-categories">
+                <?php foreach ($tickets as $ticket): ?>
+                <div class="ticket-group">
+                    <input type="text" name="ticket_type_name[]" value="<?php echo htmlspecialchars($ticket['type_name']); ?>" required>
+                    <input type="number" name="ticket_price[]" value="<?php echo htmlspecialchars($ticket['price']); ?>" required>
+                    <input type="number" name="ticket_quantity[]" value="<?php echo htmlspecialchars($ticket['max_quantity']); ?>" required>
+                    <select name="ticket_limit[]">
+                        <option>No Limit</option>
+                        <option <?php echo $ticket['max_quantity'] == 4 ? 'selected' : ''; ?>>4 per order</option>
+                    </select>
+                    <button type="button" onclick="this.parentElement.remove()">❌</button>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <button type="button" class="add-btn" onclick="addCategory()">+ Add Another Category</button>
+        </div>
+
+        <div class="form-section">
+            <h3>Seating Layout</h3>
+            <div class="seating-layout">
+                <img src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/9167360778/original/p-IDpn2ET2_OXLSrzt24AIn8he70s0VoNQ.png?1661972018" alt="Seating Layout">
+            </div>
+        </div>
+
+        <div class="form-section">
+            <h3>Promotional Codes</h3>
+            <div id="promo-codes">
+                <?php foreach ($promos as $promo): ?>
+                <div class="promo-group">
+                    <input type="text" name="promo_code[]" value="<?php echo htmlspecialchars($promo['code']); ?>" required>
+                    <input type="number" name="promo_discount[]" value="<?php echo htmlspecialchars($promo['discount_percentage']); ?>" required>
+                    <input type="date" name="promo_expiry[]" value="<?php echo htmlspecialchars($promo['expiry_date']); ?>" required>
+                    <select name="promo_category[]">
+                        <option>All Categories</option>
+                    </select>
+                    <button type="button" onclick="this.parentElement.remove()">❌</button>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <button type="button" class="add-btn" onclick="addPromo()">+ Add Promotional Code</button>
+        </div>
+
+        <div class="buttons">
+            <button type="button" class="btn-cancel" onclick="window.location.href='eventsPageForEventOrganiser.php'">Cancel</button>
+            <button type="submit" name="delete_event" class="delete" onclick="return confirm('Are you sure you want to delete this event?');">Delete Event</button>
+            <button type="submit" class="btn-save">Save Changes</button>
+        </div>
+    </form>
+</div>
+
 </body>
 </html>

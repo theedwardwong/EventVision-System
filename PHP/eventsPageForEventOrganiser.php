@@ -6,6 +6,7 @@ if (!isset($_SESSION['organiser_id'])) {
 }
 
 $organiser_id = $_SESSION['organiser_id'];
+$organiser_name = $_SESSION['organiser_name'] ?? 'Organiser';
 
 $conn = new mysqli("localhost", "root", "", "evsdatabase");
 if ($conn->connect_error) {
@@ -36,44 +37,59 @@ $conn->close();
     <title>Your Events - HELP EventVision System</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
             background-color: #f0f4ff;
         }
 
-        .navbar {
-            width: 100%;
-            background-color: #4a3aff;
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 50px;
-            color: white;
+            background: #fff;
+            padding: 20px 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .navbar .logo {
+        .logo {
             font-weight: bold;
-            font-size: 20px;
+            font-size: 18px;
+            color: #333;
         }
 
-        .navbar ul {
+        .nav {
             display: flex;
-            list-style: none;
-            gap: 20px;
+            align-items: center;
         }
 
-        .navbar ul li {
-            cursor: pointer;
+        .nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav a:hover {
+            color: #6200ea;
+        }
+
+        .profile {
+            font-weight: 500;
+            color: #333;
         }
 
         .container {
-            padding: 40px;
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
 
         h2 {
-            color: #333;
+            font-size: 28px;
             margin-bottom: 20px;
+            color: #333;
         }
 
         .events-grid {
@@ -83,58 +99,110 @@ $conn->close();
         }
 
         .event-card {
-            width: 300px;
+            width: calc(25% - 15px);
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-            padding: 15px;
-            text-align: center;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s;
+        }
+
+        .event-card:hover {
+            transform: translateY(-5px);
         }
 
         .event-card img {
             width: 100%;
             height: 200px;
             object-fit: cover;
-            border-radius: 10px;
         }
 
-        .event-card h3 {
-            margin: 10px 0 5px;
+        .event-info {
+            padding: 15px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
-        .event-card p {
+        .event-info h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .event-info p {
+            font-size: 14px;
             margin: 5px 0;
             color: #555;
         }
 
+        .event-info strong {
+            font-size: 16px;
+            margin-top: 10px;
+            display: block;
+            color: #333;
+        }
+
         .btn-primary {
-            background-color: #6C63FF;
+            background-color: #6200ea;
             color: white;
-            padding: 10px 20px;
+            text-align: center;
+            padding: 10px 0;
             text-decoration: none;
             border-radius: 5px;
-            display: inline-block;
-            margin-top: 10px;
+            margin-top: auto;
+            transition: background-color 0.3s ease;
         }
 
         .btn-primary:hover {
-            background-color: #574b90;
+            background-color: #3700b3;
+        }
+
+        @media (max-width: 1024px) {
+            .event-card {
+                width: calc(50% - 10px);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .event-card {
+                width: 100%;
+            }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .nav a {
+                margin: 10px 0;
+            }
         }
     </style>
 </head>
 <body>
 
-    <!-- Navbar -->
-    <div class="navbar">
+    <!-- Header/Navbar -->
+    <div class="header">
         <div class="logo">HELP EventVision System</div>
-        <ul>
-            <li><a href="dashboard.php" style="color:white; text-decoration:none;">Dashboard</a></li>
-            <li><a href="eventsPageForEventOrganiser.php" style="color:white; text-decoration:none;">Events</a></li>
-            <li><a href="analytics.php" style="color:white; text-decoration:none;">Reports</a></li>
-            <li><a href="logout.php" style="color:white; text-decoration:none;">Logout</a></li>
-        </ul>
+        <div class="nav">
+            <a href="dashboardEventOrganiser.php">Dashboard</a>
+            <a href="eventsPageForEventOrganiser.php">Ticket Setup</a>
+            <a href="#">Analytics Reports</a>
+        </div>
+        <div class="profile">
+            <?php echo htmlspecialchars($organiser_name); ?> | <a href="logout.php" style="color: #6200ea;">Log Out</a>
+        </div>
     </div>
 
+    <!-- Main Content -->
     <div class="container">
         <h2>Your Events</h2>
         <div class="events-grid">
@@ -142,15 +210,17 @@ $conn->close();
                 <?php foreach ($events as $event): ?>
                     <div class="event-card">
                         <img src="uploads/<?php echo htmlspecialchars($event['event_image']); ?>" alt="Event Poster">
-                        <h3><?php echo htmlspecialchars($event['event_name']); ?></h3>
-                        <p><i class="fa fa-calendar"></i> <?php echo htmlspecialchars($event['event_date']); ?></p>
-                        <p><i class="fa fa-map-marker"></i> <?php echo htmlspecialchars($event['event_location']); ?></p>
-                        <p><strong>RM <?php echo htmlspecialchars($event['event_price']); ?></strong></p>
-                        <a href="ticketsetup.php?event_id=<?php echo $event['id']; ?>" class="btn-primary">Ticket Setup</a>
+                        <div class="event-info">
+                            <h3><?php echo htmlspecialchars($event['event_name']); ?></h3>
+                            <p><?php echo htmlspecialchars($event['event_date']); ?></p>
+                            <p><?php echo htmlspecialchars($event['event_location']); ?></p>
+                            <strong>RM <?php echo htmlspecialchars($event['event_price']); ?></strong>
+                            <a href="ticketsetup.php?event_id=<?php echo $event['id']; ?>" class="btn-primary">Ticket Setup</a>
+                        </div>
                     </div>
                 <?php endforeach; ?>
             <?php else: ?>
-                <p>No events found. <a href="eventCreation.php">Create one now!</a></p>
+                <p>No events found. <a href="eventCreation.php" style="color: #6200ea;">Create one now!</a></p>
             <?php endif; ?>
         </div>
     </div>

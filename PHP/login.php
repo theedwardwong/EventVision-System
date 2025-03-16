@@ -48,49 +48,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>Login - HELP EventVision System</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Segoe UI', sans-serif;
             margin: 0;
-            background: #f0f2f5;
+            background-color: #f0f2f5;
         }
 
         /* === Navbar Styles === */
-        .navbar {
+        header {
+            background: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 20px 50px;
-            background-color: #ffffff;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px 60px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .navbar .logo {
+        header .logo {
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
             color: #333;
         }
 
-        .navbar .nav-links {
-            display: flex;
-            gap: 30px;
-            align-items: center;
-        }
-
-        .navbar .nav-links a {
+        header .nav a {
+            margin: 0 15px;
             text-decoration: none;
             color: #333;
-            font-size: 16px;
+            font-weight: 500;
             transition: color 0.3s ease;
         }
 
-        .navbar .nav-links a:hover {
+        header .nav a:hover {
             color: #6200ea;
         }
 
-        .navbar .login-btn {
+        header .nav .login-btn {
             background-color: #6200ea;
             color: #fff;
             padding: 8px 16px;
@@ -99,36 +94,71 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             transition: background-color 0.3s ease;
         }
 
-        .navbar .login-btn:hover {
+        header .nav .login-btn:hover {
             background-color: #3700b3;
         }
 
         /* === Login Container Styles === */
         .container {
-            width: 400px;
-            margin: 100px auto;
-            padding: 20px;
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 30px 20px;
             background: #fff;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            
         }
 
-        input[type=email], input[type=password] {
-            width: 100%;
+        h2 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        p.subtitle {
+            font-size: 14px;
+            color: #777;
+            margin-bottom: 20px;
+        }
+
+        form {
+            text-align: left;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        input[type=email],
+        input[type=password] {
+            width: 377px;
             padding: 10px;
-            margin: 5px 0 15px 0;
-            border: 1px solid #ccc;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
             border-radius: 5px;
+        }
+
+        .checkbox-container {
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input {
+            margin-right: 8px;
         }
 
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background-color: #6200ea;
             color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-weight: 600;
         }
 
         button:hover {
@@ -136,33 +166,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
 
         .links {
-            text-align: center;
-            margin-top: 10px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+
+        .links a {
+            color: #6200ea;
+            text-decoration: none;
         }
 
         .error {
             color: red;
-            font-size: 0.9em;
             margin-bottom: 15px;
+            font-size: 14px;
         }
     </style>
 </head>
 <body>
 
 
-<div class="navbar">
+<header>
     <div class="logo">HELP EventVision System</div>
-    <div class="nav-links">
-        <a href="#">Events</a>
+    <nav class="nav">
+        <a href="landingPage.php">Events</a>
         <a href="#">About</a>
         <a href="#">Contact</a>
         <a href="login.php" class="login-btn">Login</a>
-    </div>
-</div>
+    </nav>
+</header>
 
 <div class="container">
     <h2>HELP EventVision System</h2>
-    <p>Manage your events seamlessly</p>
+    <p class="subtitle">Manage your events seamlessly</p>
 
     <?php if (!empty($error)): ?>
         <p class="error"><?php echo htmlspecialchars($error); ?></p>
@@ -175,14 +210,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
 
-        <label><input type="checkbox" name="remember"> Remember me</label>
+        <div class="checkbox-container">
+            <input type="checkbox" name="remember" id="remember">
+            <label for="remember">Remember me</label>
+        </div>
 
         <button type="submit">Login</button>
     </form>
 
     <div class="links">
         <a href="#">Forgot Password?</a><br>
-        <small>Not an organizer? Contact admin to register</small>
+        <small>Not an organiser? Contact admin to register.</small>
     </div>
 </div>
 

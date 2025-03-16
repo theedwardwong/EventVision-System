@@ -9,6 +9,7 @@ if (!isset($_SESSION['organiser_id'])) {
 }
 
 $organiser_id = $_SESSION['organiser_id']; // Dynamically fetched organiser_id
+$organiser_name = $_SESSION['organiser_name'] ?? 'Organiser';
 
 // Database connection
     $conn = new mysqli("localhost", "root", "", "evsdatabase");
@@ -95,149 +96,143 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create New Event</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Create New Event - HELP EventVision System</title>
+
     <style>
-        /* Your existing CSS code here */
-        /* Add styles for navbar */
+        /* Base Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+        }
+
+        /* Navbar */
         .navbar {
-            width: 100%;
-            background-color: #4a3aff;
+            background-color: #fff;
+            padding: 20px 60px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px 50px;
-            color: white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .navbar .logo {
             font-weight: bold;
             font-size: 20px;
+            color: #333;
         }
 
         .navbar ul {
             display: flex;
             list-style: none;
-            gap: 20px;
+            gap: 30px;
         }
 
-        .navbar ul li {
-            cursor: pointer;
+        .navbar ul li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: Arial, sans-serif;
+        .navbar ul li a:hover {
+            color: #6200ea;
         }
 
-        body {
-            background-color: #f0f4ff;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+        .navbar .profile {
+            font-weight: 500;
         }
 
-        .header {
-            width: 850px;
-            text-align: left;
+        /* Main Container */
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+        }
+
+        h2 {
+            font-size: 28px;
             margin-bottom: 10px;
         }
 
-        .header h2 {
-            color: #222;
-            font-size: 24px;
-        }
-
-        .header p {
+        p.description {
+            font-size: 14px;
             color: #666;
-            font-size: 14px;
+            margin-bottom: 30px;
         }
 
-        .container {
-            width: 850px;
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .form-group {
+        /* Form Layout */
+        form {
             display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 20px;
-            margin-bottom: 15px;
         }
 
-        .form-group label {
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
             font-size: 14px;
-            margin-bottom: 5px;
-            display: block;
+            margin-bottom: 6px;
             color: #333;
         }
 
-        input, select, textarea {
-            width: 100%;
+        input, textarea, select {
             padding: 10px;
+            border-radius: 6px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            font-size: 14px;
         }
 
         textarea {
-            height: 80px;
+            resize: vertical;
+            height: 100px;
         }
 
         .file-upload {
-            padding: 20px;
-            border: 2px dashed #ccc;
+            padding: 10px;
+            border: 1px dashed #aaa;
+            background-color: #f9f9f9;
             text-align: center;
-            color: #666;
-            border-radius: 5px;
-            cursor: pointer;
-            background: #f9f9f9;
-        }
-
-        .file-upload span {
-            color: #007bff;
             cursor: pointer;
         }
 
-        .promo-code {
-            display: flex;
-            gap: 10px;
-        }
-
-        .promo-code input {
-            flex: 1;
-        }
-
-        .category {
-            display: flex;
-            gap: 10px;
-        }
-
-        .category input {
-            flex: 1;
-        }
-
-        .add-category {
-            background: none;
-            border: none;
-            color: #007bff;
-            cursor: pointer;
-            text-align: left;
-            margin-top: 5px;
-        }
-
-        .buttons {
+        /* Buttons */
+        .button-group {
             display: flex;
             justify-content: flex-end;
             gap: 10px;
-            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .btn-cancel {
+            background-color: #f44336;
+            color: #fff;
         }
 
         .cancel {
@@ -249,89 +244,122 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             cursor: pointer;
         }
 
-        .create {
-            background: #4a3aff;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
+        .btn-create {
+            background-color: #6200ea;
+            color: #fff;
         }
+
+        .btn-cancel:hover {
+            background-color: #d32f2f;
+        }
+
+        .btn-create:hover {
+            background-color: #3700b3;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            color: #155724;
+            background-color: #d4edda;
+        }
+
+        .error {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 6px;
+            color: #721c24;
+            background-color: #f8d7da;
+        }
+
     </style>
 </head>
+
 <body>
 
     <!-- Navbar -->
     <div class="navbar">
         <div class="logo">HELP EventVision System</div>
         <ul>
-            <li><a href="dashboard.php" style="color:white; text-decoration:none;">Dashboard</a></li>
-            <li><a href="events.php" style="color:white; text-decoration:none;">Events</a></li>
-            <li><a href="analytics.php" style="color:white; text-decoration:none;">Reports</a></li>
-            <li><a href="logout.php" style="color:white; text-decoration:none;">Logout</a></li>
+            <li><a href="dashboardEventOrganiser.php">Dashboard</a></li>
+            <li><a href="eventsPageForEventOrganiser.php">Ticket Setup</a></li>
+            <li><a href="analytics.php">Analytics Reports</a></li>
         </ul>
+        <div class="profile">
+            <?php echo htmlspecialchars($organiser_name); ?> | 
+            <a href="login.php" style="color: #6200ea; text-decoration: none;">Log Out</a>
+        </div>
     </div>
 
-    <div class="header">
-        <h2>Create New Event</h2>
-        <p>Fill in the details below to create your event</p>
-    </div>
-
+    <!-- Container -->
     <div class="container">
+        <h2>Create New Event</h2>
+        <p class="description">Fill in the details below to create your event.</p>
+
         <?php if ($message): ?>
-            <div class="<?php echo strpos($message, 'success') !== false ? 'message' : 'error'; ?>">
-                <?php echo $message; ?>
+            <div class="<?php echo strpos($message, 'successfully') !== false ? 'message' : 'error'; ?>">
+                <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
 
-        <form action="" method="post" enctype="multipart/form-data">
-            
-            <div class="form-group">
-                <div>
-                    <label>Event Name</label>
-                    <input type="text" name="event_name" required>
+        <form action="" method="POST" enctype="multipart/form-data">
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="event_name">Event Name</label>
+                    <input type="text" id="event_name" name="event_name" required>
                 </div>
-                <div class="file-upload">
-                    <p>Drop your event poster here or <span>browse files</span></p>
-                    <input type="file" name="event_poster" accept="image/*" required>
+
+                <div class="form-col">
+                    <label for="event_poster">Event Poster</label>
+                    <input type="file" id="event_poster" name="event_poster" required>
                 </div>
             </div>
 
-            <div class="form-group">
-                <div>
-                    <label>Date</label>
-                    <input type="date" name="event_date" required>
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="event_date">Date</label>
+                    <input type="date" id="event_date" name="event_date" required>
                 </div>
-                <div>
-                    <label>Time</label>
-                    <input type="time" name="event_time" required>
-                </div>
-            </div>
 
-            <!-- Location Field -->
-            <div class="form-group">
-                <div>
-                    <label>Location</label>
-                    <input type="text" name="event_location" required>
+                <div class="form-col">
+                    <label for="event_time">Time</label>
+                    <input type="time" id="event_time" name="event_time" required>
+                </div>
+
+                <div class="form-col">
+                    <label for="event_location">Location</label>
+                    <input type="text" id="event_location" name="event_location" required>
                 </div>
             </div>
 
-            <label>Event Description</label>
-            <textarea name="event_description"></textarea>
+            <div class="form-col">
+                <label for="event_description">Event Description</label>
+                <textarea id="event_description" name="event_description"></textarea>
+            </div>
 
-            <div class="form-group">
-                <div>
-                    <label>Promotional Codes</label>
-                    <div class="promo-code">
-                        <input type="text" name="promo_code" placeholder="Code">
-                        <input type="number" name="discount" placeholder="Discount %" min="0" max="100">
-                        <input type="date" name="promo_expiry" placeholder="Expiry Date">
-                    </div>
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="promo_code">Promotional Code</label>
+                    <input type="text" id="promo_code" name="promo_code">
                 </div>
 
-                <div>
-                    <label>Seating Arrangement</label>
-                    <select name="seating_arrangement">
+                <div class="form-col">
+                    <label for="discount">Discount %</label>
+                    <input type="number" id="discount" name="discount" min="0" max="100">
+                </div>
+
+                <div class="form-col">
+                    <label for="promo_expiry">Promo Expiry</label>
+                    <input type="date" id="promo_expiry" name="promo_expiry">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="seating_arrangement">Seating Arrangement</label>
+                    <select id="seating_arrangement" name="seating_arrangement">
                         <option value="Theater Style">Theater Style</option>
                         <option value="Classroom Style">Classroom Style</option>
                         <option value="Banquet Style">Banquet Style</option>
@@ -339,18 +367,27 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 </div>
             </div>
 
-            <label>Ticket Categories</label>
-            <div class="category">
-                <input type="text" name="category_name" placeholder="Category Name">
-                <input type="number" name="price" placeholder="Price">
-                <input type="number" name="quantity" placeholder="Quantity">
+            <div class="form-row">
+                <div class="form-col">
+                    <label for="category_name">Ticket Category</label>
+                    <input type="text" id="category_name" name="category_name">
+                </div>
+
+                <div class="form-col">
+                    <label for="price">Price</label>
+                    <input type="number" id="price" name="price" min="0">
+                </div>
+
+                <div class="form-col">
+                    <label for="quantity">Quantity</label>
+                    <input type="number" id="quantity" name="quantity" min="0">
+                </div>
             </div>
 
-            <div class="buttons">
-                <button type="reset" class="cancel">Cancel</button>
-                <button type="submit" class="create">Create Event</button>
+            <div class="button-group">
+                <button type="button" class="cancel" onclick="window.location.href='dashboardEventOrganiser.php'">Cancel</button>
+                <button type="submit" class="btn btn-create">Create Event</button>
             </div>
-
         </form>
     </div>
 
