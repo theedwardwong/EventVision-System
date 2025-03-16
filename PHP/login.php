@@ -17,29 +17,38 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt->execute([$email]);
             $user = $stmt->fetch();
 
-            if ($user && password_verify($password, $user['password'])) {
+            if ($user) {
+                // ✅ Verify password using password_verify
+                if (password_verify($password, $user['password'])) {
 
-                // Store session variables
-                $_SESSION['organiser_id'] = $user['organiser_id'];
-                $_SESSION['organiser_name'] = $user['full_name'];
-                $_SESSION['role'] = $user['role'];
+                    // Set session variables
+                    $_SESSION['organiser_id'] = $user['organiser_id'];
+                    $_SESSION['organiser_name'] = $user['full_name'];
+                    $_SESSION['role'] = $user['role'];
 
-                // Redirect based on role
-                if ($user['role'] == 'Admin') {
-                    header('Location: dashboardAdmin.php');
-                } else if ($user['role'] == 'Organiser') {
-                    header('Location: dashboardEventOrganiser.php');
+                    // Redirect by role
+                    if ($user['role'] === 'Admin') {
+                        header('Location: dashboardAdmin.php');
+                        exit();
+                    } elseif ($user['role'] === 'Organiser') {
+                        header('Location: dashboardEventOrganiser.php');
+                        exit();
+                    } else {
+                        $error = "Invalid user role. Please contact admin.";
+                    }
+
                 } else {
-                    $error = "Invalid user role.";
+                    // ❌ Incorrect password
+                    $error = "Invalid email or password.";
                 }
-                exit();
 
             } else {
+                // ❌ No matching user found
                 $error = "Invalid email or password.";
             }
 
         } catch (PDOException $e) {
-            $error = "Something went wrong. Please try again.";
+            $error = "Something went wrong. Please try again later.";
         }
     }
 }
