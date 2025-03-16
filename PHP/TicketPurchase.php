@@ -34,8 +34,21 @@ while ($row = $result->fetch_assoc()) {
 }
 $stmt->close();
 
+// 3. Get Promo Codes
+$promoCodes = [];
+$stmt = $conn->prepare("SELECT * FROM promotional_codes WHERE event_id = ?");
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+while ($row = $result->fetch_assoc()) {
+    $promoCodes[] = $row;
+}
+$stmt->close();
+
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -288,11 +301,13 @@ $conn->close();
 
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <div class="navbar">
-        <div class="logo">HELP EventVision System</div>
+     <!-- ===== NAVBAR ===== -->
+     <div class="navbar">
+        <div class="logo">
+            <a href="landingPage.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+        </div>
         <ul>
-            <li><a href="events.php">Events</a></li>
+            <li><a href="eventPage.php">Events</a></li>
             <li><a href="#">About</a></li>
             <li><a href="#">Contact</a></li>
             <li><a class="login-btn" href="login.php">Login</a></li>
@@ -343,27 +358,33 @@ $conn->close();
             </div>
 
             <!-- RIGHT SECTION (BOOKING SUMMARY) -->
-            <div class="right-section">
-                <div class="card booking-summary">
-                    <h3>Booking Summary</h3>
-                    <p><strong><?php echo htmlspecialchars($event['event_name']); ?></strong></p>
-                    <p>📅 <?php echo htmlspecialchars($event['event_date']); ?> | <?php echo htmlspecialchars($event['event_time'] ?? '7:00 PM'); ?></p>
-                    <hr style="margin: 15px 0;">
-                    <div class="summary-item">
-                        <span>Selected Tickets</span>
-                        <span id="selected-total">RM0.00</span>
-                    </div>
-                    <div class="promo-code">
-                        <input type="text" placeholder="Promo Code">
-                        <button>Apply</button>
-                    </div>
-                    <hr style="margin: 15px 0;">
-                    <div class="summary-item">
-                        <strong>Total</strong>
-                        <strong id="grand-total">RM0.00</strong>
-                    </div>
-                    <button class="btn-pay" onclick="confirmPayment()">Proceed to Payment</button>
+            <div class="card booking-summary">
+                <h3>Booking Summary</h3>
+                <p><strong><?php echo htmlspecialchars($event['event_name']); ?></strong></p>
+                <p>📅 <?php echo htmlspecialchars($event['event_date']); ?> | <?php echo htmlspecialchars($event['event_time'] ?? '7:00 PM'); ?></p>
+                <hr style="margin: 15px 0;">
+
+                <div class="summary-item">
+                    <span>Selected Tickets</span>
+                    <span id="selected-total">RM0.00</span>
                 </div>
+
+                <!-- Promo message placeholder -->
+                <div class="summary-item" id="promoAppliedMsg" style="display: none;">
+                    Promo Applied: 10% Off
+                </div>
+
+                <div class="promo-code">
+                    <input type="text" id="promoCodeInput" placeholder="Promo Code">
+                    <button onclick="applyPromo()">Apply</button>
+                </div>
+
+                <hr style="margin: 15px 0;">
+                <div class="summary-item">
+                    <strong>Total</strong>
+                    <strong id="grand-total">RM0.00</strong>
+                </div>
+                <button class="btn-pay" onclick="confirmPayment()">Proceed to Payment</button>
             </div>
 
         </div>
@@ -384,45 +405,90 @@ $conn->close();
         </div>
     </div>
 
-<script>
-    const ticketPrices = <?php echo json_encode(array_column($tickets, 'price')); ?>;
-    const quantities = Array(ticketPrices.length).fill(0);
+    <script>
+        const ticketPrices = <?php echo json_encode(array_column($tickets, 'price')); ?>;
+        const promoCodes = <?php echo json_encode($promoCodes); ?>;
 
-    function increaseQuantity(index) {
-        quantities[index]++;
-        updateDisplay(index);
-    }
+        const quantities = Array(ticketPrices.length).fill(0);
 
-    function decreaseQuantity(index) {
-        if (quantities[index] > 0) {
-            quantities[index]--;
+        let promoDiscount = 0;
+        let appliedPromo = false; // Track whether a promo has been applied
+
+        function increaseQuantity(index) {
+            quantities[index]++;
             updateDisplay(index);
         }
-    }
 
-    function updateDisplay(index) {
-        document.getElementById(`quantity-${index}`).innerText = quantities[index];
-        updateTotals();
-    }
-
-    function updateTotals() {
-        let total = 0;
-        quantities.forEach((qty, idx) => {
-            total += qty * parseFloat(ticketPrices[idx]);
-        });
-
-        document.getElementById('selected-total').innerText = `RM${total.toFixed(2)}`;
-        document.getElementById('grand-total').innerText = `RM${total.toFixed(2)}`;
-    }
-
-    function confirmPayment() {
-        const confirmProceed = confirm("Are you sure you want to proceed to payment?");
-        if (confirmProceed) {
-            alert("✅ Your payment is confirmed!");
-        } else {
-            alert("❌ Payment cancelled.");
+        function decreaseQuantity(index) {
+            if (quantities[index] > 0) {
+                quantities[index]--;
+                updateDisplay(index);
+            }
         }
-    }
-</script>
+
+        function updateDisplay(index) {
+            document.getElementById(`quantity-${index}`).innerText = quantities[index];
+            updateTotals();
+        }
+
+        function updateTotals() {
+            let subtotal = 0;
+
+            // Calculate subtotal based on selected ticket quantities
+            quantities.forEach((qty, idx) => {
+                subtotal += qty * parseFloat(ticketPrices[idx]);
+            });
+
+            // Apply promo discount (if any)
+            let discountedTotal = subtotal;
+
+            if (promoDiscount > 0 && subtotal > 0) {
+                discountedTotal = subtotal - (subtotal * (promoDiscount / 100));
+            }
+
+            // Update the totals in the UI
+            document.getElementById('selected-total').innerText = `RM${subtotal.toFixed(2)}`;
+            document.getElementById('grand-total').innerText = `RM${discountedTotal.toFixed(2)}`;
+        }
+
+        function applyPromo() {
+            const inputCode = document.getElementById('promoCodeInput').value.trim();
+            const promo = promoCodes.find(p => p.code === inputCode);
+            const promoMsg = document.getElementById('promoAppliedMsg');
+
+            if (!promo) {
+                alert("❌ Invalid promo code!");
+                promoDiscount = 0;
+                promoMsg.style.display = "none";
+            } else {
+                const expiry = new Date(promo.expiry_date);
+                const today = new Date();
+
+                if (expiry < today) {
+                    alert("❌ This promo code has expired.");
+                    promoDiscount = 0;
+                    promoMsg.style.display = "none";
+                } else {
+                    promoDiscount = parseFloat(promo.discount_percentage);
+                    alert(`✅ Promo code applied! ${promoDiscount}% discount`);
+                    promoMsg.style.display = "block";
+                    promoMsg.innerText = `Promo Applied: ${promoDiscount}% Off`;
+                }
+            }
+
+            // Recalculate totals when promo code is applied
+            updateTotals();
+        }
+
+        function confirmPayment() {
+            const confirmProceed = confirm("Are you sure you want to proceed to payment?");
+            if (confirmProceed) {
+                alert("✅ Your payment is confirmed!");
+            } else {
+                alert("❌ Payment cancelled.");
+            }
+        }
+
+    </script>
 </body>
 </html>

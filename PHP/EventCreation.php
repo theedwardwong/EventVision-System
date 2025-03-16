@@ -280,7 +280,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <!-- Navbar -->
     <div class="navbar">
-        <div class="logo">HELP EventVision System</div>
+        <div class="logo">
+            <a href="dashboardEventOrganiser.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+        </div>
         <ul>
             <li><a href="dashboardEventOrganiser.php">Dashboard</a></li>
             <li><a href="eventsPageForEventOrganiser.php">Ticket Setup</a></li>

@@ -250,7 +250,9 @@
 
     <!-- === Navbar/Header === -->
     <header>
-        <div class="logo">HELP EventVision System</div>
+        <div class="logo">
+            <a href="dashboardEventOrganiser.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+        </div>
         <nav class="nav">
             <a href="dashboardEventOrganiser.php">Dashboard</a>
             <a href="eventsPageForEventOrganiser.php">Ticket Setup</a>

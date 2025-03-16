@@ -186,7 +186,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 
 <header>
-    <div class="logo">HELP EventVision System</div>
+    <div class="logo">
+        <a href="landingPage.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+    </div>
     <nav class="nav">
         <a href="landingPage.php">Events</a>
         <a href="#">About</a>

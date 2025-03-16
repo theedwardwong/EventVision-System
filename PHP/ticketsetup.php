@@ -314,14 +314,16 @@ $conn->close();
 <body>
 
 <div class="header">
-    <div class="logo">HELP EventVision System</div>
+    <div class="logo">
+        <a href="dashboardEventOrganiser.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+    </div>
     <div class="nav">
         <a href="dashboardEventOrganiser.php">Dashboard</a>
         <a href="eventsPageForEventOrganiser.php">Ticket Setup</a>
         <a href="#">Analytics Reports</a>
     </div>
     <div class="profile">
-        <?php echo htmlspecialchars($organiser_name); ?> | <a href="logout.php" style="color: #6a1b9a; text-decoration: none;">Log Out</a>
+        <?php echo htmlspecialchars($organiser_name); ?> | <a href="login.php" style="color: #6a1b9a; text-decoration: none;">Log Out</a>
     </div>
 </div>
 
@@ -350,7 +352,7 @@ $conn->close();
         <div class="form-section">
             <h3>Seating Layout</h3>
             <div class="seating-layout">
-                <img src="https://s3.amazonaws.com/cdn.freshdesk.com/data/helpdesk/attachments/production/9167360778/original/p-IDpn2ET2_OXLSrzt24AIn8he70s0VoNQ.png?1661972018" alt="Seating Layout">
+                <img src="uploads/EMS.png" alt="Seating Layout">
             </div>
         </div>
 

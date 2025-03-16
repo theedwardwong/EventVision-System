@@ -191,14 +191,16 @@ $conn->close();
 
     <!-- Header/Navbar -->
     <div class="header">
-        <div class="logo">HELP EventVision System</div>
+        <div class="logo">
+            <a href="dashboardEventOrganiser.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+        </div>
         <div class="nav">
             <a href="dashboardEventOrganiser.php">Dashboard</a>
             <a href="eventsPageForEventOrganiser.php">Ticket Setup</a>
             <a href="#">Analytics Reports</a>
         </div>
         <div class="profile">
-            <?php echo htmlspecialchars($organiser_name); ?> | <a href="logout.php" style="color: #6200ea;">Log Out</a>
+            <?php echo htmlspecialchars($organiser_name); ?> | <a href="login.php" style="color: #6200ea;">Log Out</a>
         </div>
     </div>
 

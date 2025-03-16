@@ -193,7 +193,9 @@ $events = $stmt->fetchAll();
 
 <!-- NAVBAR -->
 <header>
-    <div class="logo">HELP EventVision System</div>
+    <div class="logo">
+        <a href="landingPage.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+    </div>
     <nav class="nav">
         <a href="#">Events</a>
         <a href="#">About</a>
