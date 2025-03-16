@@ -182,7 +182,7 @@ $categories = ['All Categories', 'Music', 'Theatre', 'Dance', 'Workshop'];
                         <p>📅 <?php echo date('F j, Y', strtotime($event['event_date'])); ?></p>
                         <p>📍 <?php echo htmlspecialchars($event['event_location'] ?? 'HELP Subang 2'); ?></p>
                         <strong>RM <?php echo htmlspecialchars($event['event_price']); ?></strong>
-                        <button onclick="window.location.href='TicketPurchase.php?id=<?php echo $event['id']; ?>'">Book Now</button>
+                        <button onclick="window.location.href='ticketPurchase.php?event_id=<?php echo $event['id']; ?>'">Book Now</button>
                     </div>
                 </div>
             <?php endforeach; ?>

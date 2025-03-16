@@ -197,7 +197,7 @@ $events = $stmt->fetchAll();
         <a href="landingPage.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
     </div>
     <nav class="nav">
-        <a href="#">Events</a>
+        <a href="eventPage.php">Events</a>
         <a href="#">About</a>
         <a href="#">Contact</a>
         <a href="login.php"><button>Login</button></a>
