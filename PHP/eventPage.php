@@ -139,10 +139,10 @@ $categories = ['All Categories', 'Music', 'Theatre', 'Dance', 'Workshop'];
 
 <header>
     <div class="logo">
-        <a href="dashboardEventOrganiser.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
+        <a href="landingPage.php" style="color: red; text-decoration: none;">HELP EventVision System</a>
     </div>
     <nav class="nav">
-        <a href="#">Events</a>
+        <a href="eventPage.php">Events</a>
         <a href="#">About</a>
         <a href="#">Contact</a>
         <a href="login.php">
