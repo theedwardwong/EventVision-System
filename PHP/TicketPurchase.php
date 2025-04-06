@@ -8,6 +8,18 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$stmt = $conn->prepare("SELECT SUM(max_quantity) FROM ticket_types WHERE event_id = ?");
+$stmt->bind_param("i", $event_id);
+$stmt->execute();
+$stmt->bind_result($totalQuantity);
+$stmt->fetch();
+$stmt->close();
+
+if ($totalQuantity <= 0) {
+    header("Location: waitlist.php?event_id=" . $event_id);
+    exit();
+}
+
 // 1. Get Event Details
 $event = null;
 $stmt = $conn->prepare("SELECT * FROM events WHERE id = ?");
@@ -384,7 +396,14 @@ $conn->close();
                     <strong>Total</strong>
                     <strong id="grand-total">RM0.00</strong>
                 </div>
-                <button class="btn-pay" onclick="confirmPayment()">Proceed to Payment</button>
+                <form id="paymentForm" action="payment.php" method="POST">
+                    <input type="hidden" name="event_id" value="<?php echo $event['id']; ?>">
+                    <input type="hidden" name="quantities" id="quantitiesInput">
+                    <input type="hidden" name="discount" id="discountInput">
+                    <input type="hidden" name="total_amount" id="totalAmountInput">
+
+                    <button type="submit" class="btn-pay" onclick="prepareAndSubmit()">Proceed to Payment</button>
+                </form>
             </div>
 
         </div>
@@ -475,20 +494,37 @@ $conn->close();
                     promoMsg.innerText = `Promo Applied: ${promoDiscount}% Off`;
                 }
             }
-
             // Recalculate totals when promo code is applied
             updateTotals();
         }
 
         function confirmPayment() {
-            const confirmProceed = confirm("Are you sure you want to proceed to payment?");
-            if (confirmProceed) {
-                alert("✅ Your payment is confirmed!");
-            } else {
-                alert("❌ Payment cancelled.");
-            }
+            // 1. Set ticket quantities array
+            document.getElementById('quantitiesInput').value = JSON.stringify(quantities);
+
+            // 2. Set discount
+            document.getElementById('discountInput').value = promoDiscount;
+
+            // 3. Set total amount
+            const total = document.getElementById('grand-total').innerText.replace('RM', '');
+            document.getElementById('totalAmountInput').value = parseFloat(total.trim());
+
+            // 4. Submit the form
+            document.querySelector('form').submit();
         }
 
+        function prepareAndSubmit() {
+            let total = 0;
+            quantities.forEach((qty, idx) => {
+                total += qty * parseFloat(ticketPrices[idx]);
+            });
+
+            const discounted = total - (total * (promoDiscount / 100));
+            
+            document.getElementById('quantitiesInput').value = JSON.stringify(quantities);
+            document.getElementById('discountInput').value = promoDiscount;
+            document.getElementById('totalAmountInput').value = discounted.toFixed(2);
+        }
     </script>
 </body>
 </html>
