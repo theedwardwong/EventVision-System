@@ -26,13 +26,13 @@
 
 2. **Clone the Repository:**
    ```bash
-      git clone https://github.com/theedwardwong/EventVision-System.git
+      git clone https://github.com/theedwardwong/Code-Lab-HELP.git
    
 Set Up Database:
 
 Open phpMyAdmin from XAMPP control panel.
 Create a new database called ecodatabase.
-Import the provided SQL file (EVSdatabase.sql) into the new database.
+Import the provided SQL file (codelab_help.sql) into the new database.
 Configure the Project:
 
 Move the project folder into the htdocs directory in your XAMPP installation.
